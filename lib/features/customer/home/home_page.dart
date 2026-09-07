@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/widgets/home/popular_services.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -110,7 +111,7 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Section title
+            // Service Categories
             const Text(
               'What do you need?',
               style: TextStyle(
@@ -121,7 +122,6 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Service categories
             GridView.count(
               crossAxisCount: 3,
               shrinkWrap: true,
@@ -155,6 +155,11 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
+
+            // Popular Services
+            const SizedBox(height: 32),
+
+            const PopularServices(),
           ],
         ),
       ),
