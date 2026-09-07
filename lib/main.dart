@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/features/customer/home/home_page.dart';
 
 void main() {
   runApp(const SuperApp());
@@ -15,11 +16,7 @@ class SuperApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('Super App'),
-        ),
-      ),
+      home: const HomePage(),
     );
   }
 }
