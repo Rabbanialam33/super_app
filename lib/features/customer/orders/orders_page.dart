@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:super_app/features/customer/orders/models/order_status.dart';
 import 'package:super_app/features/customer/orders/order_details/order_details_page.dart';
 
 class OrdersPage extends StatelessWidget {
@@ -49,14 +50,14 @@ class _ActiveOrders extends StatelessWidget {
           icon: Icons.restaurant,
           title: 'Food Order',
           subtitle: 'Your food order is being prepared',
-          status: 'Preparing',
+          status: OrderStatus.preparing,
           statusIcon: Icons.restaurant_menu,
           orderId: 'SUP-1001',
           onViewDetails: () {
             _openOrderDetails(
               context,
               orderType: 'Food Order',
-              status: 'Preparing',
+              status: OrderStatus.preparing,
               orderId: 'SUP-1001',
             );
           },
@@ -66,14 +67,14 @@ class _ActiveOrders extends StatelessWidget {
           icon: Icons.local_taxi,
           title: 'Ride Booking',
           subtitle: 'Driver is on the way',
-          status: 'On the way',
+          status: OrderStatus.onTheWay,
           statusIcon: Icons.directions_car,
           orderId: 'SUP-1002',
           onViewDetails: () {
             _openOrderDetails(
               context,
               orderType: 'Ride Booking',
-              status: 'On the way',
+              status: OrderStatus.onTheWay,
               orderId: 'SUP-1002',
             );
           },
@@ -83,14 +84,14 @@ class _ActiveOrders extends StatelessWidget {
           icon: Icons.home_repair_service,
           title: 'Home Service',
           subtitle: 'Electrician service booked',
-          status: 'Confirmed',
+          status: OrderStatus.confirmed,
           statusIcon: Icons.check_circle_outline,
           orderId: 'SUP-1003',
           onViewDetails: () {
             _openOrderDetails(
               context,
               orderType: 'Home Service',
-              status: 'Confirmed',
+              status: OrderStatus.confirmed,
               orderId: 'SUP-1003',
             );
           },
@@ -112,14 +113,14 @@ class _CompletedOrders extends StatelessWidget {
           icon: Icons.shopping_bag,
           title: 'Shopping Order',
           subtitle: 'Order delivered successfully',
-          status: 'Delivered',
+          status: OrderStatus.delivered,
           statusIcon: Icons.done_all,
           orderId: 'SUP-1004',
           onViewDetails: () {
             _openOrderDetails(
               context,
               orderType: 'Shopping Order',
-              status: 'Delivered',
+              status: OrderStatus.delivered,
               orderId: 'SUP-1004',
             );
           },
@@ -129,14 +130,14 @@ class _CompletedOrders extends StatelessWidget {
           icon: Icons.delivery_dining,
           title: 'Parcel Delivery',
           subtitle: 'Parcel delivered successfully',
-          status: 'Completed',
+          status: OrderStatus.completed,
           statusIcon: Icons.done_all,
           orderId: 'SUP-1005',
           onViewDetails: () {
             _openOrderDetails(
               context,
               orderType: 'Parcel Delivery',
-              status: 'Completed',
+              status: OrderStatus.completed,
               orderId: 'SUP-1005',
             );
           },
@@ -158,14 +159,14 @@ class _CancelledOrders extends StatelessWidget {
           icon: Icons.restaurant,
           title: 'Food Order',
           subtitle: 'Order was cancelled',
-          status: 'Cancelled',
+          status: OrderStatus.cancelled,
           statusIcon: Icons.cancel_outlined,
           orderId: 'SUP-1006',
           onViewDetails: () {
             _openOrderDetails(
               context,
               orderType: 'Food Order',
-              status: 'Cancelled',
+              status: OrderStatus.cancelled,
               orderId: 'SUP-1006',
             );
           },
@@ -178,7 +179,7 @@ class _CancelledOrders extends StatelessWidget {
 void _openOrderDetails(
   BuildContext context, {
   required String orderType,
-  required String status,
+  required OrderStatus status,
   required String orderId,
 }) {
   Navigator.push(
@@ -197,7 +198,7 @@ class _OrderCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final String status;
+  final OrderStatus status;
   final IconData statusIcon;
   final String orderId;
   final VoidCallback onViewDetails;
@@ -292,7 +293,7 @@ class _OrderCard extends StatelessWidget {
                 const SizedBox(width: 7),
                 Expanded(
                   child: Text(
-                    status,
+                    status.label,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,

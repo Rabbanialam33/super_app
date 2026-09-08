@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/features/customer/orders/models/order_status.dart';
 
 class OrderDetailsPage extends StatelessWidget {
   final String orderType;
-  final String status;
+  final OrderStatus status;
   final String orderId;
 
   const OrderDetailsPage({
@@ -33,9 +34,7 @@ class OrderDetailsPage extends StatelessWidget {
               status: status,
               orderId: orderId,
             ),
-
             const SizedBox(height: 20),
-
             const Text(
               'Order Status',
               style: TextStyle(
@@ -43,13 +42,9 @@ class OrderDetailsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 16),
-
-            const _StatusTimeline(),
-
+            _StatusTimeline(currentStatus: status),
             const SizedBox(height: 24),
-
             const Text(
               'Order Items',
               style: TextStyle(
@@ -57,13 +52,9 @@ class OrderDetailsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 12),
-
             const _OrderItemsCard(),
-
             const SizedBox(height: 24),
-
             const Text(
               'Price Summary',
               style: TextStyle(
@@ -71,13 +62,9 @@ class OrderDetailsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 12),
-
             const _PriceSummaryCard(),
-
             const SizedBox(height: 24),
-
             const Text(
               'Order Information',
               style: TextStyle(
@@ -85,13 +72,9 @@ class OrderDetailsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 12),
-
             const _InfoCard(),
-
             const SizedBox(height: 24),
-
             const Text(
               'Payment Information',
               style: TextStyle(
@@ -99,13 +82,9 @@ class OrderDetailsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 12),
-
             const _PaymentCard(),
-
             const SizedBox(height: 24),
-
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -128,7 +107,7 @@ class OrderDetailsPage extends StatelessWidget {
 
 class _OrderHeader extends StatelessWidget {
   final String orderType;
-  final String status;
+  final OrderStatus status;
   final String orderId;
 
   const _OrderHeader({
@@ -191,7 +170,7 @@ class _OrderHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              status,
+              status.label,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
@@ -206,10 +185,44 @@ class _OrderHeader extends StatelessWidget {
 }
 
 class _StatusTimeline extends StatelessWidget {
-  const _StatusTimeline();
+  final OrderStatus currentStatus;
+
+  const _StatusTimeline({
+    required this.currentStatus,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final steps = [
+      _StatusStep(
+        status: OrderStatus.confirmed,
+        icon: Icons.check_circle_outline,
+        title: 'Order Confirmed',
+      ),
+      _StatusStep(
+        status: OrderStatus.preparing,
+        icon: Icons.restaurant_menu,
+        title: 'Preparing',
+      ),
+      _StatusStep(
+        status: OrderStatus.assigned,
+        icon: Icons.person_pin_circle_outlined,
+        title: 'Partner Assigned',
+      ),
+      _StatusStep(
+        status: OrderStatus.onTheWay,
+        icon: Icons.delivery_dining,
+        title: 'On the Way',
+      ),
+      _StatusStep(
+        status: OrderStatus.delivered,
+        icon: Icons.home_outlined,
+        title: 'Delivered',
+      ),
+    ];
+
+    final currentIndex = _getCurrentIndex(steps);
+
     return Card(
       elevation: 1,
       margin: EdgeInsets.zero,
@@ -219,37 +232,102 @@ class _StatusTimeline extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
-          children: const [
-            _TimelineItem(
-              icon: Icons.check_circle,
-              title: 'Order Confirmed',
-              subtitle: 'Your order has been confirmed',
-              completed: true,
-            ),
-            _TimelineItem(
-              icon: Icons.restaurant_menu,
-              title: 'Preparing',
-              subtitle: 'Your order is being prepared',
-              completed: true,
-            ),
-            _TimelineItem(
-              icon: Icons.delivery_dining,
-              title: 'On the Way',
-              subtitle: 'Delivery partner is on the way',
-              completed: false,
-            ),
-            _TimelineItem(
-              icon: Icons.home_outlined,
-              title: 'Delivered',
-              subtitle: 'Waiting for delivery',
-              completed: false,
-              isLast: true,
-            ),
-          ],
+          children: List.generate(
+            steps.length,
+            (index) {
+              final step = steps[index];
+              final completed = index <= currentIndex;
+
+              return _TimelineItem(
+                icon: step.icon,
+                title: step.title,
+                subtitle: _getSubtitle(step.status),
+                completed: completed,
+                isCurrent: index == currentIndex,
+                isLast: index == steps.length - 1,
+              );
+            },
+          ),
         ),
       ),
     );
   }
+
+  int _getCurrentIndex(List<_StatusStep> steps) {
+    if (currentStatus == OrderStatus.pending) {
+      return -1;
+    }
+
+    if (currentStatus == OrderStatus.cancelled ||
+        currentStatus == OrderStatus.failed) {
+      return -1;
+    }
+
+    if (currentStatus == OrderStatus.completed) {
+      return steps.length - 1;
+    }
+
+    final index = steps.indexWhere(
+      (step) => step.status == currentStatus,
+    );
+
+    if (index != -1) {
+      return index;
+    }
+
+    if (currentStatus == OrderStatus.ready) {
+      return 1;
+    }
+
+    return 0;
+  }
+
+  String _getSubtitle(OrderStatus status) {
+    if (status == currentStatus) {
+      return status.description;
+    }
+
+    if (_isBefore(status)) {
+      return 'Completed';
+    }
+
+    return status.description;
+  }
+
+  bool _isBefore(OrderStatus status) {
+    const order = [
+      OrderStatus.confirmed,
+      OrderStatus.preparing,
+      OrderStatus.assigned,
+      OrderStatus.onTheWay,
+      OrderStatus.delivered,
+    ];
+
+    final currentIndex = order.indexOf(currentStatus);
+    final statusIndex = order.indexOf(status);
+
+    if (currentStatus == OrderStatus.completed) {
+      return true;
+    }
+
+    if (currentIndex == -1 || statusIndex == -1) {
+      return false;
+    }
+
+    return statusIndex < currentIndex;
+  }
+}
+
+class _StatusStep {
+  final OrderStatus status;
+  final IconData icon;
+  final String title;
+
+  const _StatusStep({
+    required this.status,
+    required this.icon,
+    required this.title,
+  });
 }
 
 class _TimelineItem extends StatelessWidget {
@@ -257,6 +335,7 @@ class _TimelineItem extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool completed;
+  final bool isCurrent;
   final bool isLast;
 
   const _TimelineItem({
@@ -264,6 +343,7 @@ class _TimelineItem extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.completed,
+    required this.isCurrent,
     this.isLast = false,
   });
 
@@ -279,7 +359,9 @@ class _TimelineItem extends StatelessWidget {
           child: Column(
             children: [
               Icon(
-                icon,
+                completed
+                    ? Icons.check_circle
+                    : icon,
                 size: 24,
                 color: completed
                     ? colorScheme.primary
@@ -321,7 +403,12 @@ class _TimelineItem extends StatelessWidget {
                   subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: isCurrent
+                        ? colorScheme.primary
+                        : Colors.grey.shade600,
+                    fontWeight: isCurrent
+                        ? FontWeight.w600
+                        : FontWeight.normal,
                   ),
                 ),
                 if (!isLast) const SizedBox(height: 18),
