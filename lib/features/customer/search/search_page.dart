@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:super_app/features/customer/delivery/delivery_page.dart';
+import 'package:super_app/features/customer/food/food_page.dart';
+import 'package:super_app/features/customer/manpower/manpower_page.dart';
+import 'package:super_app/features/customer/ride/ride_page.dart';
+import 'package:super_app/features/customer/services/services_home_page.dart';
+import 'package:super_app/features/customer/shopping/shopping_page.dart';
+
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -55,6 +62,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
+
     _filteredItems = _items;
     _searchController.addListener(_performSearch);
   }
@@ -73,6 +81,47 @@ class _SearchPageState extends State<SearchPage> {
         }).toList();
       }
     });
+  }
+
+  void _openSearchResult(_SearchItem item) {
+    Widget? page;
+
+    switch (item.category) {
+      case 'Food':
+        page = const FoodPage();
+        break;
+
+      case 'Shopping':
+        page = const ShoppingPage();
+        break;
+
+      case 'Delivery':
+        page = const DeliveryPage();
+        break;
+
+      case 'Ride':
+        page = const RidePage();
+        break;
+
+      case 'Manpower':
+        page = const ManpowerPage();
+        break;
+
+      case 'Services':
+        page = const ServicesHomePage();
+        break;
+    }
+
+    if (page == null) {
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => page!,
+      ),
+    );
   }
 
   @override
@@ -140,7 +189,9 @@ class _SearchPageState extends State<SearchPage> {
 
                         return _SearchResultCard(
                           item: item,
-                          onTap: () {},
+                          onTap: () {
+                            _openSearchResult(item);
+                          },
                         );
                       },
                     ),
