@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:super_app/features/customer/delivery/delivery_page.dart';
 import 'package:super_app/features/customer/food/food_page.dart';
+import 'package:super_app/features/customer/ride/ride_page.dart';
 import 'package:super_app/features/customer/shopping/shopping_page.dart';
 
 class ServiceCategories extends StatelessWidget {
@@ -66,7 +67,14 @@ class ServiceCategories extends StatelessWidget {
             _ServiceCategoryItem(
               icon: Icons.local_taxi,
               title: 'Ride',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RidePage(),
+                  ),
+                );
+              },
             ),
             _ServiceCategoryItem(
               icon: Icons.people,
