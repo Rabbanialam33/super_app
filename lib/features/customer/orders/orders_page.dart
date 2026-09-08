@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:super_app/features/customer/orders/order_details/order_details_page.dart';
+
 class OrdersPage extends StatelessWidget {
   const OrdersPage({super.key});
 
@@ -42,29 +44,56 @@ class _ActiveOrders extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: const [
+      children: [
         _OrderCard(
           icon: Icons.restaurant,
           title: 'Food Order',
           subtitle: 'Your food order is being prepared',
           status: 'Preparing',
           statusIcon: Icons.restaurant_menu,
+          orderId: 'SUP-1001',
+          onViewDetails: () {
+            _openOrderDetails(
+              context,
+              orderType: 'Food Order',
+              status: 'Preparing',
+              orderId: 'SUP-1001',
+            );
+          },
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         _OrderCard(
           icon: Icons.local_taxi,
           title: 'Ride Booking',
           subtitle: 'Driver is on the way',
           status: 'On the way',
           statusIcon: Icons.directions_car,
+          orderId: 'SUP-1002',
+          onViewDetails: () {
+            _openOrderDetails(
+              context,
+              orderType: 'Ride Booking',
+              status: 'On the way',
+              orderId: 'SUP-1002',
+            );
+          },
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         _OrderCard(
           icon: Icons.home_repair_service,
           title: 'Home Service',
           subtitle: 'Electrician service booked',
           status: 'Confirmed',
           statusIcon: Icons.check_circle_outline,
+          orderId: 'SUP-1003',
+          onViewDetails: () {
+            _openOrderDetails(
+              context,
+              orderType: 'Home Service',
+              status: 'Confirmed',
+              orderId: 'SUP-1003',
+            );
+          },
         ),
       ],
     );
@@ -78,21 +107,39 @@ class _CompletedOrders extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: const [
+      children: [
         _OrderCard(
           icon: Icons.shopping_bag,
           title: 'Shopping Order',
           subtitle: 'Order delivered successfully',
           status: 'Delivered',
           statusIcon: Icons.done_all,
+          orderId: 'SUP-1004',
+          onViewDetails: () {
+            _openOrderDetails(
+              context,
+              orderType: 'Shopping Order',
+              status: 'Delivered',
+              orderId: 'SUP-1004',
+            );
+          },
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         _OrderCard(
           icon: Icons.delivery_dining,
           title: 'Parcel Delivery',
           subtitle: 'Parcel delivered successfully',
           status: 'Completed',
           statusIcon: Icons.done_all,
+          orderId: 'SUP-1005',
+          onViewDetails: () {
+            _openOrderDetails(
+              context,
+              orderType: 'Parcel Delivery',
+              status: 'Completed',
+              orderId: 'SUP-1005',
+            );
+          },
         ),
       ],
     );
@@ -106,17 +153,44 @@ class _CancelledOrders extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: const [
+      children: [
         _OrderCard(
           icon: Icons.restaurant,
           title: 'Food Order',
           subtitle: 'Order was cancelled',
           status: 'Cancelled',
           statusIcon: Icons.cancel_outlined,
+          orderId: 'SUP-1006',
+          onViewDetails: () {
+            _openOrderDetails(
+              context,
+              orderType: 'Food Order',
+              status: 'Cancelled',
+              orderId: 'SUP-1006',
+            );
+          },
         ),
       ],
     );
   }
+}
+
+void _openOrderDetails(
+  BuildContext context, {
+  required String orderType,
+  required String status,
+  required String orderId,
+}) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => OrderDetailsPage(
+        orderType: orderType,
+        status: status,
+        orderId: orderId,
+      ),
+    ),
+  );
 }
 
 class _OrderCard extends StatelessWidget {
@@ -125,6 +199,8 @@ class _OrderCard extends StatelessWidget {
   final String subtitle;
   final String status;
   final IconData statusIcon;
+  final String orderId;
+  final VoidCallback onViewDetails;
 
   const _OrderCard({
     required this.icon,
@@ -132,6 +208,8 @@ class _OrderCard extends StatelessWidget {
     required this.subtitle,
     required this.status,
     required this.statusIcon,
+    required this.orderId,
+    required this.onViewDetails,
   });
 
   @override
@@ -190,13 +268,20 @@ class _OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-
-            const SizedBox(height: 16),
-
-            const Divider(height: 1),
-
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Order ID: $orderId',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ),
             const SizedBox(height: 14),
-
+            const Divider(height: 1),
+            const SizedBox(height: 14),
             Row(
               children: [
                 Icon(
@@ -216,7 +301,7 @@ class _OrderCard extends StatelessWidget {
                   ),
                 ),
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: onViewDetails,
                   child: const Text('View Details'),
                 ),
               ],
