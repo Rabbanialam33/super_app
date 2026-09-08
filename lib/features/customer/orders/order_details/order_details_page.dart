@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:super_app/features/customer/orders/models/order_status.dart';
+import 'package:super_app/features/customer/orders/models/order_status_history.dart';
 
 class OrderDetailsPage extends StatelessWidget {
   final String orderType;
@@ -13,8 +15,155 @@ class OrderDetailsPage extends StatelessWidget {
     required this.orderId,
   });
 
+  List<OrderStatusHistory> _buildStatusHistory() {
+    final now = DateTime.now();
+
+    switch (status) {
+      case OrderStatus.pending:
+        return [
+          OrderStatusHistory(
+            status: OrderStatus.pending,
+            timestamp: now,
+            message: OrderStatus.pending.description,
+          ),
+        ];
+
+      case OrderStatus.confirmed:
+        return [
+          OrderStatusHistory(
+            status: OrderStatus.pending,
+            timestamp: now.subtract(const Duration(minutes: 12)),
+            message: 'Order placed successfully',
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.confirmed,
+            timestamp: now,
+            message: OrderStatus.confirmed.description,
+          ),
+        ];
+
+      case OrderStatus.preparing:
+      case OrderStatus.ready:
+        return [
+          OrderStatusHistory(
+            status: OrderStatus.pending,
+            timestamp: now.subtract(const Duration(minutes: 30)),
+            message: 'Order placed successfully',
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.confirmed,
+            timestamp: now.subtract(const Duration(minutes: 20)),
+            message: OrderStatus.confirmed.description,
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.preparing,
+            timestamp: now,
+            message: status == OrderStatus.ready
+                ? OrderStatus.ready.description
+                : OrderStatus.preparing.description,
+          ),
+        ];
+
+      case OrderStatus.assigned:
+      case OrderStatus.onTheWay:
+        return [
+          OrderStatusHistory(
+            status: OrderStatus.pending,
+            timestamp: now.subtract(const Duration(minutes: 45)),
+            message: 'Order placed successfully',
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.confirmed,
+            timestamp: now.subtract(const Duration(minutes: 35)),
+            message: OrderStatus.confirmed.description,
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.preparing,
+            timestamp: now.subtract(const Duration(minutes: 25)),
+            message: OrderStatus.preparing.description,
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.assigned,
+            timestamp: now.subtract(const Duration(minutes: 15)),
+            message: OrderStatus.assigned.description,
+          ),
+          if (status == OrderStatus.onTheWay)
+            OrderStatusHistory(
+              status: OrderStatus.onTheWay,
+              timestamp: now,
+              message: OrderStatus.onTheWay.description,
+            ),
+        ];
+
+      case OrderStatus.delivered:
+      case OrderStatus.completed:
+        return [
+          OrderStatusHistory(
+            status: OrderStatus.pending,
+            timestamp: now.subtract(const Duration(minutes: 60)),
+            message: 'Order placed successfully',
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.confirmed,
+            timestamp: now.subtract(const Duration(minutes: 50)),
+            message: OrderStatus.confirmed.description,
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.preparing,
+            timestamp: now.subtract(const Duration(minutes: 40)),
+            message: OrderStatus.preparing.description,
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.assigned,
+            timestamp: now.subtract(const Duration(minutes: 30)),
+            message: OrderStatus.assigned.description,
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.onTheWay,
+            timestamp: now.subtract(const Duration(minutes: 20)),
+            message: OrderStatus.onTheWay.description,
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.delivered,
+            timestamp: now,
+            message: OrderStatus.delivered.description,
+          ),
+        ];
+
+      case OrderStatus.cancelled:
+        return [
+          OrderStatusHistory(
+            status: OrderStatus.pending,
+            timestamp: now.subtract(const Duration(minutes: 20)),
+            message: 'Order placed successfully',
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.cancelled,
+            timestamp: now,
+            message: OrderStatus.cancelled.description,
+          ),
+        ];
+
+      case OrderStatus.failed:
+        return [
+          OrderStatusHistory(
+            status: OrderStatus.pending,
+            timestamp: now.subtract(const Duration(minutes: 15)),
+            message: 'Order placed successfully',
+          ),
+          OrderStatusHistory(
+            status: OrderStatus.failed,
+            timestamp: now,
+            message: OrderStatus.failed.description,
+          ),
+        ];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final statusHistory = _buildStatusHistory();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -43,7 +192,22 @@ class OrderDetailsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _StatusTimeline(currentStatus: status),
+            _StatusTimeline(
+              currentStatus: status,
+              history: statusHistory,
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Order History',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _StatusHistoryCard(
+              history: statusHistory,
+            ),
             const SizedBox(height: 24),
             const Text(
               'Order Items',
@@ -186,9 +350,11 @@ class _OrderHeader extends StatelessWidget {
 
 class _StatusTimeline extends StatelessWidget {
   final OrderStatus currentStatus;
+  final List<OrderStatusHistory> history;
 
   const _StatusTimeline({
     required this.currentStatus,
+    required this.history,
   });
 
   @override
@@ -232,33 +398,54 @@ class _StatusTimeline extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
-          children: List.generate(
-            steps.length,
-            (index) {
-              final step = steps[index];
-              final completed = index <= currentIndex;
+          children: [
+            if (currentStatus == OrderStatus.pending)
+              _TimelineItem(
+                icon: Icons.schedule,
+                title: 'Order Pending',
+                subtitle: currentStatus.description,
+                completed: false,
+                isCurrent: true,
+                isLast: true,
+              )
+            else if (currentStatus == OrderStatus.cancelled ||
+                currentStatus == OrderStatus.failed)
+              _TimelineItem(
+                icon: currentStatus == OrderStatus.cancelled
+                    ? Icons.cancel_outlined
+                    : Icons.error_outline,
+                title: currentStatus.label,
+                subtitle: currentStatus.description,
+                completed: false,
+                isCurrent: true,
+                isLast: true,
+              )
+            else
+              ...List.generate(
+                steps.length,
+                (index) {
+                  final step = steps[index];
+                  final completed = index <= currentIndex;
 
-              return _TimelineItem(
-                icon: step.icon,
-                title: step.title,
-                subtitle: _getSubtitle(step.status),
-                completed: completed,
-                isCurrent: index == currentIndex,
-                isLast: index == steps.length - 1,
-              );
-            },
-          ),
+                  return _TimelineItem(
+                    icon: step.icon,
+                    title: step.title,
+                    subtitle: _getSubtitle(step.status),
+                    completed: completed,
+                    isCurrent: index == currentIndex,
+                    isLast: index == steps.length - 1,
+                  );
+                },
+              ),
+          ],
         ),
       ),
     );
   }
 
   int _getCurrentIndex(List<_StatusStep> steps) {
-    if (currentStatus == OrderStatus.pending) {
-      return -1;
-    }
-
-    if (currentStatus == OrderStatus.cancelled ||
+    if (currentStatus == OrderStatus.pending ||
+        currentStatus == OrderStatus.cancelled ||
         currentStatus == OrderStatus.failed) {
       return -1;
     }
@@ -282,19 +469,33 @@ class _StatusTimeline extends StatelessWidget {
     return 0;
   }
 
-  String _getSubtitle(OrderStatus status) {
-    if (status == currentStatus) {
-      return status.description;
-    }
+  String _getSubtitle(OrderStatus stepStatus) {
+    final matchingHistory = history.where(
+      (item) => item.status == stepStatus,
+    );
 
-    if (_isBefore(status)) {
+    if (matchingHistory.isNotEmpty) {
+      final latest = matchingHistory.last;
+
+      if (stepStatus == currentStatus) {
+        return latest.message;
+      }
+
       return 'Completed';
     }
 
-    return status.description;
+    if (stepStatus == currentStatus) {
+      return stepStatus.description;
+    }
+
+    if (_isBefore(stepStatus)) {
+      return 'Completed';
+    }
+
+    return stepStatus.description;
   }
 
-  bool _isBefore(OrderStatus status) {
+  bool _isBefore(OrderStatus stepStatus) {
     const order = [
       OrderStatus.confirmed,
       OrderStatus.preparing,
@@ -304,7 +505,7 @@ class _StatusTimeline extends StatelessWidget {
     ];
 
     final currentIndex = order.indexOf(currentStatus);
-    final statusIndex = order.indexOf(status);
+    final statusIndex = order.indexOf(stepStatus);
 
     if (currentStatus == OrderStatus.completed) {
       return true;
@@ -315,6 +516,107 @@ class _StatusTimeline extends StatelessWidget {
     }
 
     return statusIndex < currentIndex;
+  }
+}
+
+class _StatusHistoryCard extends StatelessWidget {
+  final List<OrderStatusHistory> history;
+
+  const _StatusHistoryCard({
+    required this.history,
+  });
+
+  String _formatTime(DateTime time) {
+    final hour = time.hour % 12 == 0 ? 12 : time.hour % 12;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.hour >= 12 ? 'PM' : 'AM';
+
+    return '$hour:$minute $period';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      elevation: 1,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: history.reversed.map((item) {
+            final isLatest = item == history.last;
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isLatest
+                          ? colorScheme.primaryContainer
+                          : Colors.grey.shade100,
+                    ),
+                    child: Icon(
+                      isLatest
+                          ? Icons.radio_button_checked
+                          : Icons.check_circle_outline,
+                      size: 20,
+                      color: isLatest
+                          ? colorScheme.primary
+                          : Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                item.statusLabel,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              _formatTime(item.timestamp),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.message,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
   }
 }
 
@@ -359,9 +661,7 @@ class _TimelineItem extends StatelessWidget {
           child: Column(
             children: [
               Icon(
-                completed
-                    ? Icons.check_circle
-                    : icon,
+                completed ? Icons.check_circle : icon,
                 size: 24,
                 color: completed
                     ? colorScheme.primary
