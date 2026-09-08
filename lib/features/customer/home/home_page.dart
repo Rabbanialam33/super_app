@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:super_app/widgets/home/popular_services.dart';
 import 'package:super_app/widgets/home/service_categories.dart';
+import 'package:super_app/widgets/home/promotional_banner.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -46,9 +47,7 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
-
             TextField(
               decoration: InputDecoration(
                 hintText: 'Search food, services, rides...',
@@ -58,61 +57,11 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
-
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF1565C0),
-                    Color(0xFF42A5F5),
-                  ],
-                ),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'সব প্রয়োজন • এক প্ল্যাটফর্মে',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 21,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Food • Ride • Delivery • Services',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Explore Now →',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
+            const PromotionalBanner(),
             const SizedBox(height: 28),
-
             const ServiceCategories(),
-
             const SizedBox(height: 32),
-
             const PopularServices(),
           ],
         ),
