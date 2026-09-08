@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:super_app/features/customer/delivery/delivery_page.dart';
 import 'package:super_app/features/customer/food/food_page.dart';
+import 'package:super_app/features/customer/manpower/manpower_page.dart';
 import 'package:super_app/features/customer/ride/ride_page.dart';
 import 'package:super_app/features/customer/shopping/shopping_page.dart';
 
@@ -79,7 +80,14 @@ class ServiceCategories extends StatelessWidget {
             _ServiceCategoryItem(
               icon: Icons.people,
               title: 'Manpower',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ManpowerPage(),
+                  ),
+                );
+              },
             ),
             _ServiceCategoryItem(
               icon: Icons.home_repair_service,
