@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_app/features/customer/food/food_page.dart';
 
 class ServiceCategories extends StatelessWidget {
   const ServiceCategories({super.key});
@@ -22,30 +23,43 @@ class ServiceCategories extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 18,
           crossAxisSpacing: 18,
-          children: const [
+          children: [
             _ServiceCategoryItem(
               icon: Icons.restaurant,
               title: 'Food',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FoodPage(),
+                  ),
+                );
+              },
             ),
             _ServiceCategoryItem(
               icon: Icons.shopping_bag,
               title: 'Shopping',
+              onTap: () {},
             ),
             _ServiceCategoryItem(
               icon: Icons.delivery_dining,
               title: 'Delivery',
+              onTap: () {},
             ),
             _ServiceCategoryItem(
               icon: Icons.local_taxi,
               title: 'Ride',
+              onTap: () {},
             ),
             _ServiceCategoryItem(
               icon: Icons.people,
               title: 'Manpower',
+              onTap: () {},
             ),
             _ServiceCategoryItem(
               icon: Icons.home_repair_service,
               title: 'Services',
+              onTap: () {},
             ),
           ],
         ),
@@ -57,39 +71,45 @@ class ServiceCategories extends StatelessWidget {
 class _ServiceCategoryItem extends StatelessWidget {
   final IconData icon;
   final String title;
+  final VoidCallback onTap;
 
   const _ServiceCategoryItem({
     required this.icon,
     required this.title,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 62,
-          height: 62,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Theme.of(context).colorScheme.primaryContainer,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Column(
+        children: [
+          Container(
+            width: 62,
+            height: 62,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(context).colorScheme.primaryContainer,
+            ),
+            child: Icon(
+              icon,
+              size: 30,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
-          child: Icon(
-            icon,
-            size: 30,
-            color: Theme.of(context).colorScheme.primary,
+          const SizedBox(height: 9),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        const SizedBox(height: 9),
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
