@@ -1,24 +1,45 @@
 import 'package:flutter/material.dart';
 
+import 'package:super_app/features/customer/orders/models/order_model.dart';
 import 'package:super_app/features/customer/orders/models/order_status.dart';
 import 'package:super_app/features/customer/orders/models/order_status_history.dart';
 
 class OrderDetailsPage extends StatelessWidget {
-  final String orderType;
-  final OrderStatus status;
-  final String orderId;
+  final OrderModel? order;
+
+  final String? orderType;
+  final OrderStatus? status;
+  final String? orderId;
 
   const OrderDetailsPage({
     super.key,
-    required this.orderType,
-    required this.status,
-    required this.orderId,
+    this.order,
+    this.orderType,
+    this.status,
+    this.orderId,
   });
 
-  List<OrderStatusHistory> _buildStatusHistory() {
+  String get _orderType =>
+      order?.orderType ?? orderType ?? 'Order';
+
+  OrderStatus get _status =>
+      order?.status ?? status ?? OrderStatus.pending;
+
+  String get _orderId => order?.id ?? orderId ?? '';
+
+  List<OrderStatusHistory> get _statusHistory {
+    if (order != null && order!.statusHistory.isNotEmpty) {
+      return order!.statusHistory;
+    }
+
+    return _buildFallbackStatusHistory();
+  }
+
+  List<OrderStatusHistory> _buildFallbackStatusHistory() {
+    final currentStatus = _status;
     final now = DateTime.now();
 
-    switch (status) {
+    switch (currentStatus) {
       case OrderStatus.pending:
         return [
           OrderStatusHistory(
@@ -32,7 +53,9 @@ class OrderDetailsPage extends StatelessWidget {
         return [
           OrderStatusHistory(
             status: OrderStatus.pending,
-            timestamp: now.subtract(const Duration(minutes: 12)),
+            timestamp: now.subtract(
+              const Duration(minutes: 12),
+            ),
             message: 'Order placed successfully',
           ),
           OrderStatusHistory(
@@ -47,20 +70,24 @@ class OrderDetailsPage extends StatelessWidget {
         return [
           OrderStatusHistory(
             status: OrderStatus.pending,
-            timestamp: now.subtract(const Duration(minutes: 30)),
+            timestamp: now.subtract(
+              const Duration(minutes: 30),
+            ),
             message: 'Order placed successfully',
           ),
           OrderStatusHistory(
             status: OrderStatus.confirmed,
-            timestamp: now.subtract(const Duration(minutes: 20)),
+            timestamp: now.subtract(
+              const Duration(minutes: 20),
+            ),
             message: OrderStatus.confirmed.description,
           ),
           OrderStatusHistory(
-            status: OrderStatus.preparing,
+            status: currentStatus == OrderStatus.ready
+                ? OrderStatus.ready
+                : OrderStatus.preparing,
             timestamp: now,
-            message: status == OrderStatus.ready
-                ? OrderStatus.ready.description
-                : OrderStatus.preparing.description,
+            message: currentStatus.description,
           ),
         ];
 
@@ -69,25 +96,33 @@ class OrderDetailsPage extends StatelessWidget {
         return [
           OrderStatusHistory(
             status: OrderStatus.pending,
-            timestamp: now.subtract(const Duration(minutes: 45)),
+            timestamp: now.subtract(
+              const Duration(minutes: 45),
+            ),
             message: 'Order placed successfully',
           ),
           OrderStatusHistory(
             status: OrderStatus.confirmed,
-            timestamp: now.subtract(const Duration(minutes: 35)),
+            timestamp: now.subtract(
+              const Duration(minutes: 35),
+            ),
             message: OrderStatus.confirmed.description,
           ),
           OrderStatusHistory(
             status: OrderStatus.preparing,
-            timestamp: now.subtract(const Duration(minutes: 25)),
+            timestamp: now.subtract(
+              const Duration(minutes: 25),
+            ),
             message: OrderStatus.preparing.description,
           ),
           OrderStatusHistory(
             status: OrderStatus.assigned,
-            timestamp: now.subtract(const Duration(minutes: 15)),
+            timestamp: now.subtract(
+              const Duration(minutes: 15),
+            ),
             message: OrderStatus.assigned.description,
           ),
-          if (status == OrderStatus.onTheWay)
+          if (currentStatus == OrderStatus.onTheWay)
             OrderStatusHistory(
               status: OrderStatus.onTheWay,
               timestamp: now,
@@ -100,27 +135,37 @@ class OrderDetailsPage extends StatelessWidget {
         return [
           OrderStatusHistory(
             status: OrderStatus.pending,
-            timestamp: now.subtract(const Duration(minutes: 60)),
+            timestamp: now.subtract(
+              const Duration(minutes: 60),
+            ),
             message: 'Order placed successfully',
           ),
           OrderStatusHistory(
             status: OrderStatus.confirmed,
-            timestamp: now.subtract(const Duration(minutes: 50)),
+            timestamp: now.subtract(
+              const Duration(minutes: 50),
+            ),
             message: OrderStatus.confirmed.description,
           ),
           OrderStatusHistory(
             status: OrderStatus.preparing,
-            timestamp: now.subtract(const Duration(minutes: 40)),
+            timestamp: now.subtract(
+              const Duration(minutes: 40),
+            ),
             message: OrderStatus.preparing.description,
           ),
           OrderStatusHistory(
             status: OrderStatus.assigned,
-            timestamp: now.subtract(const Duration(minutes: 30)),
+            timestamp: now.subtract(
+              const Duration(minutes: 30),
+            ),
             message: OrderStatus.assigned.description,
           ),
           OrderStatusHistory(
             status: OrderStatus.onTheWay,
-            timestamp: now.subtract(const Duration(minutes: 20)),
+            timestamp: now.subtract(
+              const Duration(minutes: 20),
+            ),
             message: OrderStatus.onTheWay.description,
           ),
           OrderStatusHistory(
@@ -134,7 +179,9 @@ class OrderDetailsPage extends StatelessWidget {
         return [
           OrderStatusHistory(
             status: OrderStatus.pending,
-            timestamp: now.subtract(const Duration(minutes: 20)),
+            timestamp: now.subtract(
+              const Duration(minutes: 20),
+            ),
             message: 'Order placed successfully',
           ),
           OrderStatusHistory(
@@ -148,7 +195,9 @@ class OrderDetailsPage extends StatelessWidget {
         return [
           OrderStatusHistory(
             status: OrderStatus.pending,
-            timestamp: now.subtract(const Duration(minutes: 15)),
+            timestamp: now.subtract(
+              const Duration(minutes: 15),
+            ),
             message: 'Order placed successfully',
           ),
           OrderStatusHistory(
@@ -162,7 +211,8 @@ class OrderDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusHistory = _buildStatusHistory();
+    final currentStatus = _status;
+    final history = _statusHistory;
 
     return Scaffold(
       appBar: AppBar(
@@ -179,9 +229,9 @@ class OrderDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _OrderHeader(
-              orderType: orderType,
-              status: status,
-              orderId: orderId,
+              orderType: _orderType,
+              status: currentStatus,
+              orderId: _orderId,
             ),
             const SizedBox(height: 20),
             const Text(
@@ -193,8 +243,8 @@ class OrderDetailsPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _StatusTimeline(
-              currentStatus: status,
-              history: statusHistory,
+              currentStatus: currentStatus,
+              history: history,
             ),
             const SizedBox(height: 24),
             const Text(
@@ -206,7 +256,7 @@ class OrderDetailsPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _StatusHistoryCard(
-              history: statusHistory,
+              history: history,
             ),
             const SizedBox(height: 24),
             const Text(
@@ -217,7 +267,9 @@ class OrderDetailsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            const _OrderItemsCard(),
+            _OrderItemsCard(
+              items: order?.items,
+            ),
             const SizedBox(height: 24),
             const Text(
               'Price Summary',
@@ -227,7 +279,12 @@ class OrderDetailsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            const _PriceSummaryCard(),
+            _PriceSummaryCard(
+              itemTotal: order?.itemTotal,
+              deliveryFee: order?.deliveryFee,
+              discount: order?.discount,
+              grandTotal: order?.grandTotal,
+            ),
             const SizedBox(height: 24),
             const Text(
               'Order Information',
@@ -237,7 +294,11 @@ class OrderDetailsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            const _InfoCard(),
+            _InfoCard(
+              orderType: order?.orderType,
+              deliveryAddress: order?.deliveryAddress,
+              createdAt: order?.createdAt,
+            ),
             const SizedBox(height: 24),
             const Text(
               'Payment Information',
@@ -247,13 +308,19 @@ class OrderDetailsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            const _PaymentCard(),
+            _PaymentCard(
+              paymentMethod: order?.paymentMethod,
+              totalAmount: order?.grandTotal,
+              paymentStatus: order?.paymentStatus,
+            ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () {},
-                icon: const Icon(Icons.support_agent_outlined),
+                icon: const Icon(
+                  Icons.support_agent_outlined,
+                ),
                 label: const Text('Need Help?'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -519,6 +586,18 @@ class _StatusTimeline extends StatelessWidget {
   }
 }
 
+class _StatusStep {
+  final OrderStatus status;
+  final IconData icon;
+  final String title;
+
+  const _StatusStep({
+    required this.status,
+    required this.icon,
+    required this.title,
+  });
+}
+
 class _StatusHistoryCard extends StatelessWidget {
   final List<OrderStatusHistory> history;
 
@@ -537,6 +616,24 @@ class _StatusHistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    if (history.isEmpty) {
+      return Card(
+        elevation: 1,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: const Padding(
+          padding: EdgeInsets.all(20),
+          child: Center(
+            child: Text(
+              'No order history available.',
+            ),
+          ),
+        ),
+      );
+    }
 
     return Card(
       elevation: 1,
@@ -577,7 +674,8 @@ class _StatusHistoryCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
@@ -618,18 +716,6 @@ class _StatusHistoryCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _StatusStep {
-  final OrderStatus status;
-  final IconData icon;
-  final String title;
-
-  const _StatusStep({
-    required this.status,
-    required this.icon,
-    required this.title,
-  });
 }
 
 class _TimelineItem extends StatelessWidget {
@@ -686,7 +772,8 @@ class _TimelineItem extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(top: 1),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
@@ -722,42 +809,74 @@ class _TimelineItem extends StatelessWidget {
 }
 
 class _OrderItemsCard extends StatelessWidget {
-  const _OrderItemsCard();
+  final List<OrderItemModel>? items;
+
+  const _OrderItemsCard({
+    this.items,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final displayItems = items == null || items!.isEmpty
+        ? const <OrderItemModel>[]
+        : items!;
+
     return Card(
       elevation: 1,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _OrderItem(
-              icon: Icons.fastfood_outlined,
-              name: 'Sample Food Item',
-              quantity: '2 ×',
-              price: '₹240.00',
-            ),
-            Divider(height: 24),
-            _OrderItem(
-              icon: Icons.local_drink_outlined,
-              name: 'Sample Beverage',
-              quantity: '1 ×',
-              price: '₹80.00',
-            ),
-            Divider(height: 24),
-            _OrderItem(
-              icon: Icons.shopping_bag_outlined,
-              name: 'Sample Product',
-              quantity: '1 ×',
-              price: '₹150.00',
-            ),
-          ],
-        ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: displayItems.isEmpty
+            ? const Column(
+                children: [
+                  _OrderItem(
+                    icon: Icons.fastfood_outlined,
+                    name: 'Sample Food Item',
+                    quantity: '2 ×',
+                    price: '₹240.00',
+                  ),
+                  Divider(height: 24),
+                  _OrderItem(
+                    icon: Icons.local_drink_outlined,
+                    name: 'Sample Beverage',
+                    quantity: '1 ×',
+                    price: '₹80.00',
+                  ),
+                  Divider(height: 24),
+                  _OrderItem(
+                    icon: Icons.shopping_bag_outlined,
+                    name: 'Sample Product',
+                    quantity: '1 ×',
+                    price: '₹150.00',
+                  ),
+                ],
+              )
+            : Column(
+                children: List.generate(
+                  displayItems.length,
+                  (index) {
+                    final item = displayItems[index];
+
+                    return Column(
+                      children: [
+                        _OrderItem(
+                          icon: Icons.shopping_bag_outlined,
+                          name: item.name,
+                          quantity: '${item.quantity} ×',
+                          price:
+                              '₹${item.total.toStringAsFixed(2)}',
+                        ),
+                        if (index <
+                            displayItems.length - 1)
+                          const Divider(height: 24),
+                      ],
+                    );
+                  },
+                ),
+              ),
       ),
     );
   }
@@ -797,7 +916,8 @@ class _OrderItem extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
               Text(
                 name,
@@ -833,41 +953,76 @@ class _OrderItem extends StatelessWidget {
 }
 
 class _PriceSummaryCard extends StatelessWidget {
-  const _PriceSummaryCard();
+  final double? itemTotal;
+  final double? deliveryFee;
+  final double? discount;
+  final double? grandTotal;
+
+  const _PriceSummaryCard({
+    this.itemTotal,
+    this.deliveryFee,
+    this.discount,
+    this.grandTotal,
+  });
+
+  String _currency(double value) {
+    return '₹${value.toStringAsFixed(2)}';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final hasRealData = itemTotal != null ||
+        deliveryFee != null ||
+        discount != null ||
+        grandTotal != null;
+
+    final resolvedItemTotal =
+        hasRealData ? itemTotal ?? 0 : 470.0;
+    final resolvedDeliveryFee =
+        hasRealData ? deliveryFee ?? 0 : 40.0;
+    final resolvedDiscount =
+        hasRealData ? discount ?? 0 : 50.0;
+    final resolvedGrandTotal = hasRealData
+        ? grandTotal ??
+            (resolvedItemTotal +
+                resolvedDeliveryFee -
+                resolvedDiscount)
+        : 460.0;
+
     return Card(
       elevation: 1,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Padding(
-        padding: EdgeInsets.all(16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             _PriceRow(
               title: 'Item Total',
-              value: '₹470.00',
+              value: _currency(resolvedItemTotal),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             _PriceRow(
               title: 'Delivery Fee',
-              value: '₹40.00',
+              value: _currency(resolvedDeliveryFee),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             _PriceRow(
               title: 'Discount',
-              value: '-₹50.00',
+              value:
+                  '-${_currency(resolvedDiscount)}',
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 14),
+            const Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: 14,
+              ),
               child: Divider(height: 1),
             ),
             _PriceRow(
               title: 'Grand Total',
-              value: '₹460.00',
+              value: _currency(resolvedGrandTotal),
               isTotal: true,
             ),
           ],
@@ -916,7 +1071,21 @@ class _PriceRow extends StatelessWidget {
 }
 
 class _InfoCard extends StatelessWidget {
-  const _InfoCard();
+  final String? orderType;
+  final String? deliveryAddress;
+  final DateTime? createdAt;
+
+  const _InfoCard({
+    this.orderType,
+    this.deliveryAddress,
+    this.createdAt,
+  });
+
+  String _formatDate(DateTime dateTime) {
+    return '${dateTime.day.toString().padLeft(2, '0')}/'
+        '${dateTime.month.toString().padLeft(2, '0')}/'
+        '${dateTime.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -926,26 +1095,31 @@ class _InfoCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Padding(
-        padding: EdgeInsets.all(16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             _InfoRow(
               icon: Icons.shopping_bag_outlined,
               title: 'Order Type',
-              value: 'Super App Order',
+              value: orderType ?? 'Super App Order',
             ),
-            Divider(height: 24),
+            const Divider(height: 24),
             _InfoRow(
               icon: Icons.location_on_outlined,
               title: 'Delivery Address',
-              value: 'Your selected address',
+              value: deliveryAddress == null ||
+                      deliveryAddress!.isEmpty
+                  ? 'Your selected address'
+                  : deliveryAddress!,
             ),
-            Divider(height: 24),
+            const Divider(height: 24),
             _InfoRow(
               icon: Icons.access_time_outlined,
               title: 'Order Time',
-              value: 'Today',
+              value: createdAt == null
+                  ? 'Today'
+                  : _formatDate(createdAt!),
             ),
           ],
         ),
@@ -955,36 +1129,46 @@ class _InfoCard extends StatelessWidget {
 }
 
 class _PaymentCard extends StatelessWidget {
-  const _PaymentCard();
+  final String? paymentMethod;
+  final double? totalAmount;
+  final String? paymentStatus;
+
+  const _PaymentCard({
+    this.paymentMethod,
+    this.totalAmount,
+    this.paymentStatus,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final amount = totalAmount ?? 460.0;
+
     return Card(
       elevation: 1,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Padding(
-        padding: EdgeInsets.all(16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             _InfoRow(
               icon: Icons.account_balance_wallet_outlined,
               title: 'Payment Method',
-              value: 'Online Payment',
+              value: paymentMethod ?? 'Online Payment',
             ),
-            Divider(height: 24),
+            const Divider(height: 24),
             _InfoRow(
               icon: Icons.payments_outlined,
               title: 'Total Amount',
-              value: '₹460.00',
+              value: '₹${amount.toStringAsFixed(2)}',
             ),
-            Divider(height: 24),
+            const Divider(height: 24),
             _InfoRow(
               icon: Icons.verified_outlined,
               title: 'Payment Status',
-              value: 'Pending',
+              value: paymentStatus ?? 'Pending',
             ),
           ],
         ),
@@ -1019,7 +1203,8 @@ class _InfoRow extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
               Text(
                 title,
