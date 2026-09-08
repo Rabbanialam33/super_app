@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:super_app/features/customer/search/search_page.dart';
 import 'package:super_app/widgets/home/popular_services.dart';
 import 'package:super_app/widgets/home/promotional_banner.dart';
 import 'package:super_app/widgets/home/service_categories.dart';
@@ -117,27 +118,36 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Search
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search food, services, rides...',
-                  prefixIcon: const Icon(
-                    Icons.search_rounded,
-                  ),
-                  suffixIcon: IconButton(
-                    tooltip: 'Filters',
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.tune_rounded,
+              InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SearchPage(),
                     ),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade100,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
+                  );
+                },
+                child: IgnorePointer(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search food, services, rides...',
+                      prefixIcon: const Icon(
+                        Icons.search_rounded,
+                      ),
+                      suffixIcon: const Icon(
+                        Icons.tune_rounded,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                      ),
+                    ),
                   ),
                 ),
               ),
