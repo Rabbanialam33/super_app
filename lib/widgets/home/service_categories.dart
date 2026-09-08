@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:super_app/features/customer/food/food_page.dart';
+import 'package:super_app/features/customer/shopping/shopping_page.dart';
 
 class ServiceCategories extends StatelessWidget {
   const ServiceCategories({super.key});
@@ -39,7 +40,14 @@ class ServiceCategories extends StatelessWidget {
             _ServiceCategoryItem(
               icon: Icons.shopping_bag,
               title: 'Shopping',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ShoppingPage(),
+                  ),
+                );
+              },
             ),
             _ServiceCategoryItem(
               icon: Icons.delivery_dining,
