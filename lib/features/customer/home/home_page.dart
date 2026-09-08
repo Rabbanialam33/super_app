@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:super_app/widgets/home/popular_services.dart';
+import 'package:super_app/widgets/home/service_categories.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -26,7 +27,6 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Location
             Row(
               children: [
                 const Icon(Icons.location_on_outlined),
@@ -49,7 +49,6 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Search
             TextField(
               decoration: InputDecoration(
                 hintText: 'Search food, services, rides...',
@@ -62,7 +61,6 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Promotional Banner
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -109,89 +107,16 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
-            // Service Categories
-            const Text(
-              'What do you need?',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            const ServiceCategories(),
 
-            const SizedBox(height: 16),
-
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              children: const [
-                _ServiceItem(
-                  icon: Icons.restaurant,
-                  title: 'Food',
-                ),
-                _ServiceItem(
-                  icon: Icons.shopping_bag,
-                  title: 'Shopping',
-                ),
-                _ServiceItem(
-                  icon: Icons.delivery_dining,
-                  title: 'Delivery',
-                ),
-                _ServiceItem(
-                  icon: Icons.local_taxi,
-                  title: 'Ride',
-                ),
-                _ServiceItem(
-                  icon: Icons.people,
-                  title: 'Manpower',
-                ),
-                _ServiceItem(
-                  icon: Icons.home_repair_service,
-                  title: 'Services',
-                ),
-              ],
-            ),
-
-            // Popular Services
             const SizedBox(height: 32),
 
             const PopularServices(),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ServiceItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-
-  const _ServiceItem({
-    required this.icon,
-    required this.title,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 28,
-          child: Icon(icon),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
     );
   }
 }
