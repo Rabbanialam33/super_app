@@ -4,6 +4,7 @@ import 'package:super_app/features/customer/delivery/delivery_page.dart';
 import 'package:super_app/features/customer/food/food_page.dart';
 import 'package:super_app/features/customer/manpower/manpower_page.dart';
 import 'package:super_app/features/customer/ride/ride_page.dart';
+import 'package:super_app/features/customer/services/services_home_page.dart';
 import 'package:super_app/features/customer/shopping/shopping_page.dart';
 
 class ServiceCategories extends StatelessWidget {
@@ -92,7 +93,14 @@ class ServiceCategories extends StatelessWidget {
             _ServiceCategoryItem(
               icon: Icons.home_repair_service,
               title: 'Services',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ServicesHomePage(),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -124,7 +132,9 @@ class _ServiceCategoryItem extends StatelessWidget {
             height: 62,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: Theme.of(context)
+                  .colorScheme
+                  .primaryContainer,
             ),
             child: Icon(
               icon,
