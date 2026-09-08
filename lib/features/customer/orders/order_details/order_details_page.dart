@@ -51,6 +51,34 @@ class OrderDetailsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             const Text(
+              'Order Items',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            const _OrderItemsCard(),
+
+            const SizedBox(height: 24),
+
+            const Text(
+              'Price Summary',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            const _PriceSummaryCard(),
+
+            const SizedBox(height: 24),
+
+            const Text(
               'Order Information',
               style: TextStyle(
                 fontSize: 20,
@@ -306,6 +334,200 @@ class _TimelineItem extends StatelessWidget {
   }
 }
 
+class _OrderItemsCard extends StatelessWidget {
+  const _OrderItemsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: const Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _OrderItem(
+              icon: Icons.fastfood_outlined,
+              name: 'Sample Food Item',
+              quantity: '2 ×',
+              price: '₹240.00',
+            ),
+            Divider(height: 24),
+            _OrderItem(
+              icon: Icons.local_drink_outlined,
+              name: 'Sample Beverage',
+              quantity: '1 ×',
+              price: '₹80.00',
+            ),
+            Divider(height: 24),
+            _OrderItem(
+              icon: Icons.shopping_bag_outlined,
+              name: 'Sample Product',
+              quantity: '1 ×',
+              price: '₹150.00',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OrderItem extends StatelessWidget {
+  final IconData icon;
+  final String name;
+  final String quantity;
+  final String price;
+
+  const _OrderItem({
+    required this.icon,
+    required this.name,
+    required this.quantity,
+    required this.price,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      children: [
+        Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: colorScheme.primaryContainer,
+          ),
+          child: Icon(
+            icon,
+            color: colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                quantity,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          price,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PriceSummaryCard extends StatelessWidget {
+  const _PriceSummaryCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: const Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _PriceRow(
+              title: 'Item Total',
+              value: '₹470.00',
+            ),
+            SizedBox(height: 12),
+            _PriceRow(
+              title: 'Delivery Fee',
+              value: '₹40.00',
+            ),
+            SizedBox(height: 12),
+            _PriceRow(
+              title: 'Discount',
+              value: '-₹50.00',
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 14),
+              child: Divider(height: 1),
+            ),
+            _PriceRow(
+              title: 'Grand Total',
+              value: '₹460.00',
+              isTotal: true,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PriceRow extends StatelessWidget {
+  final String title;
+  final String value;
+  final bool isTotal;
+
+  const _PriceRow({
+    required this.title,
+    required this.value,
+    this.isTotal = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: isTotal ? 16 : 14,
+              fontWeight: isTotal
+                  ? FontWeight.bold
+                  : FontWeight.normal,
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: isTotal ? 17 : 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _InfoCard extends StatelessWidget {
   const _InfoCard();
 
@@ -323,8 +545,8 @@ class _InfoCard extends StatelessWidget {
           children: [
             _InfoRow(
               icon: Icons.shopping_bag_outlined,
-              title: 'Items / Service',
-              value: 'Super App Service',
+              title: 'Order Type',
+              value: 'Super App Order',
             ),
             Divider(height: 24),
             _InfoRow(
@@ -369,7 +591,7 @@ class _PaymentCard extends StatelessWidget {
             _InfoRow(
               icon: Icons.payments_outlined,
               title: 'Total Amount',
-              value: '₹0.00',
+              value: '₹460.00',
             ),
             Divider(height: 24),
             _InfoRow(
