@@ -17,7 +17,7 @@ class PopularServices extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 120,
+          height: 128,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: const [
@@ -67,7 +67,7 @@ class _PopularServiceItem extends StatelessWidget {
     return Container(
       width: 130,
       margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
@@ -76,14 +76,17 @@ class _PopularServiceItem extends StatelessWidget {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             icon,
             size: 32,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 13,
